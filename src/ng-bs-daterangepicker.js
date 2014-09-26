@@ -6,12 +6,12 @@
 (function (angular) {
 'use strict';
 
-angular.module('ngBootstrap', []).directive('input', function ($compile, $parse) {
+angular.module('ngBootstrap', []).directive('input', ['$parse', function ($parse) {
 	return {
 		restrict: 'E',
 		require: '?ngModel',
 		link: function ($scope, $element, $attributes, ngModel) {
-			if ($attributes.type !== 'daterange' || ngModel === null ) return;
+			if ($attributes.type !== 'daterange' || ngModel === null ) return;''
 
 			var options = {};
       options.timePicker = $attributes.timePicker === 'true';
@@ -53,6 +53,6 @@ angular.module('ngBootstrap', []).directive('input', function ($compile, $parse)
 			});			
 		}
 	};
-});
+}]);
 
 })(angular);
