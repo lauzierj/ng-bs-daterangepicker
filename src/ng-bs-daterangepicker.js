@@ -14,22 +14,13 @@ angular.module('ngBootstrap', []).directive('input', function ($compile, $parse)
 			if ($attributes.type !== 'daterange' || ngModel === null ) return;
 
 			var options = {};
-			options.format = $attributes.format || 'YYYY-MM-DD';
-			options.separator = $attributes.separator || ' - ';
+      options.timePicker = $attributes.timePicker === 'true';
+      options.timePickerIncrement = $attributes.timePickerIncrement && parseInt($attributes.timePickerIncrement);
+      options.separator = $attributes.separator || '-';
 			options.minDate = $attributes.minDate && moment($attributes.minDate);
 			options.maxDate = $attributes.maxDate && moment($attributes.maxDate);
 			options.dateLimit = $attributes.limit && moment.duration.apply(this, $attributes.limit.split(' ').map(function (elem, index) { return index === 0 && parseInt(elem, 10) || elem; }) );
 			options.ranges = $attributes.ranges && $parse($attributes.ranges)($scope);
-			options.locale = $attributes.locale && $parse($attributes.locale)($scope);
-			options.opens = $attributes.opens && $parse($attributes.opens)($scope);
-
-			function format(date) {
-				return date.format(options.format);
-			}
-
-			function formatted(dates) {
-				return [format(dates.startDate), format(dates.endDate)].join(options.separator);
-			}
 
 			ngModel.$formatters.unshift(function (modelValue) {
 				if (!modelValue) return '';
@@ -39,11 +30,6 @@ angular.module('ngBootstrap', []).directive('input', function ($compile, $parse)
 			ngModel.$parsers.unshift(function (viewValue) {
 				return viewValue;
 			});
-
-			ngModel.$render = function () {
-				if (!ngModel.$viewValue || !ngModel.$viewValue.startDate) return;
-				$element.val(formatted(ngModel.$viewValue));
-			};
 
 			$scope.$watch($attributes.ngModel, function (modelValue) {
 				if (!modelValue || (!modelValue.startDate)) {
@@ -55,6 +41,8 @@ angular.module('ngBootstrap', []).directive('input', function ($compile, $parse)
 				$element.data('daterangepicker').updateView();
 				$element.data('daterangepicker').updateCalendars();
 				$element.data('daterangepicker').updateInputText();
+
+        $element.val(modelValue.startDate.calendar() + ' ' + options.separator + ' ' + modelValue.endDate.calendar());
 			});
 
 			$element.daterangepicker(options, function(start, end) {
